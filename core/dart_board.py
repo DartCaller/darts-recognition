@@ -81,7 +81,7 @@ class DartBoard:
         print('dartPlaneAbsPxlPos: ', dart_plane_abs_pxl_pos.to_list())
         # Other way round minus if camera on other side
         dart_plane_rel_pxl_pos = self.bulls_eye_pxl_coord.minus(dart_plane_abs_pxl_pos)
-        print('dartPlaneRelPxlPos: ', dart_plane_rel_pxl_pos.toList())
+        print('dartPlaneRelPxlPos: ', dart_plane_rel_pxl_pos.to_list())
         dart_plane_rel_pos = Vector(
             dart_plane_rel_pxl_pos.x / self.pxl_per_mm[0],
             dart_plane_rel_pxl_pos.y / self.pxl_per_mm[1]
