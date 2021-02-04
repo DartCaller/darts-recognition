@@ -1,4 +1,4 @@
-from find_first_index import find_first_index
+from . import find_first_index
 import math
 
 

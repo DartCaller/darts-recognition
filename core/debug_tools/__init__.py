@@ -1,1 +1,1 @@
-from show_zoomed_image_area import show_zoomed_image_area
+from .show_zoomed_image_area import show_zoomed_image_area
