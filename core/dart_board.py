@@ -5,6 +5,7 @@ from scipy.ndimage import binary_closing
 from scipy.ndimage.measurements import center_of_mass
 from debug_tools import board_visualizer, show_zoomed_image_area
 from helper_functions import calculate_dartboard_section_from_coords, isolate_dart_tip
+from helper_functions.binary_diff_images import binary_diff_images
 
 
 class DartBoard:
@@ -45,7 +46,7 @@ class DartBoard:
         self.pxl_per_mm = (dartboard_pixel_per_mm_x, dartboard_pixel_per_mm_y)
 
     def get_single_axis_dart_pxl_pos(self, dart_img, axis, second_dart=False):
-        diff_img = diffImagesFast(self.empty_board_images[axis], dart_img, self.focused_y_range, 0.2)
+        diff_img = binary_diff_images(self.empty_board_images[axis], dart_img, self.focused_y_range, 0.2)
         enhanced_diff_img = binary_closing(diff_img, structure=np.ones((5, 5))).astype(int)
 
         isolated_dart = isolate_dart_tip(enhanced_diff_img, second_dart)
