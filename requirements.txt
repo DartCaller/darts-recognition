@@ -1,0 +1,6 @@
+matplotlib~=3.3.3
+numpy~=1.19.5
+scipy~=1.5.4
+setuptools~=40.6.2
+Cython~=0.29.21
+opencv-python-headless~=4.5.1
