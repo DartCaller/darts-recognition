@@ -1,0 +1,1 @@
+from .capture_and_get_image_from_remote import capture_and_get_image_from_remote
