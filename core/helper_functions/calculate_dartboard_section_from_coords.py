@@ -29,4 +29,4 @@ def calculate_dartboard_section_from_coords(vector):
         return 'Double ' + str(section)
     elif ring_index is None:
         return '0'
-    return section
+    return 'Single ' + str(section)
