@@ -22,4 +22,4 @@ def via_ssh(command, ssh_ip):
 
 
 def execute_command(cmd):
-    return os.popen(cmd).read()
+    return os.popen(cmd).read().rstrip()
