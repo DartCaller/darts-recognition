@@ -35,9 +35,8 @@ class Camera:
         copy_file_to_remote(take_image_script_path, remote_working_dir, self.remote_connection)
         remote_path = execute_command(via_ssh(f'python {remote_take_image_path}', self.remote_connection))
         local_file_path = copy_file_from_remote(remote_path, self.image_dir, self.remote_connection)
-        # execute_command(via_ssh(f'rm {remote_path}', self.remote_connection))
-        # return local_file_path
-        return 'a'
+        execute_command(via_ssh(f'rm {remote_path}', self.remote_connection))
+        return local_file_path
 
     def _take_photo_on_local(self):
         from helper_functions.take_image import take_image
