@@ -4,7 +4,7 @@ from vector import Vector
 from scipy.ndimage import binary_closing
 from scipy.ndimage.measurements import center_of_mass
 from debug_tools import board_visualizer, show_zoomed_image_area
-from helper_functions import calculate_dartboard_section_from_coords, isolate_dart_tip
+from helper_functions import calculate_dartboard_section_from_coords, isolate_dart_tip, time_function_execution
 from helper_functions.binary_diff_images import binary_diff_images
 
 
@@ -46,18 +46,30 @@ class DartBoard:
         self.pxl_per_mm = (dartboard_pixel_per_mm_x, dartboard_pixel_per_mm_y)
 
     def get_single_axis_dart_pxl_pos(self, dart_img, axis, second_dart=False):
-        diff_img = binary_diff_images(self.empty_board_images[axis], dart_img, self.focused_y_range, 0.2)
-        enhanced_diff_img = binary_closing(diff_img, structure=np.ones((5, 5))).astype(int)
+        diff_img = time_function_execution(
+            'binary_diff_images',
+            lambda: binary_diff_images(self.empty_board_images[axis], dart_img, self.focused_y_range, 0.2)
+        )
+        enhanced_diff_img = time_function_execution(
+            'binary_closing',
+            lambda: binary_closing(diff_img, structure=np.ones((5, 5))).astype(int)
+        )
 
-        isolated_dart = isolate_dart_tip(enhanced_diff_img, second_dart)
+        isolated_dart = time_function_execution(
+            'isolate_dart_tip',
+            lambda: isolate_dart_tip(enhanced_diff_img, second_dart)
+        )
         _, x_coordinate = center_of_mass(isolated_dart)
 
-        if self.debug:
-            show_zoomed_image_area(dart_img, x_coordinate, self.focused_y_range)
+        # if self.debug:
+        #     show_zoomed_image_area(dart_img, x_coordinate, self.focused_y_range)
         return x_coordinate
 
     def get_dart_pxl_pos(self, dart_img_x_axis, dart_img_y_axis, get_second_dart=False):
-        x_pxl_pos = self.get_single_axis_dart_pxl_pos(dart_img_x_axis, 0, get_second_dart)
+        x_pxl_pos = time_function_execution(
+            'get_single_axis_dart_pxl_pos',
+            lambda: self.get_single_axis_dart_pxl_pos(dart_img_x_axis, 0, get_second_dart)
+        )
         y_pxl_pos = self.get_single_axis_dart_pxl_pos(dart_img_y_axis, 1, get_second_dart)
         return Vector(x_pxl_pos, y_pxl_pos)
 
@@ -77,7 +89,7 @@ class DartBoard:
         return Vector(intersect_x, intersect_y)
 
     def get_dart_score(self, dart_img_x_axis, dart_img_y_axis):
-        dart_plane_abs_pxl_pos = self.get_dart_pxl_pos(dart_img_x_axis, dart_img_y_axis)
+        dart_plane_abs_pxl_pos = time_function_execution('get_dart_pxl_pos', lambda: self.get_dart_pxl_pos(dart_img_x_axis, dart_img_y_axis))
         print('dartPlaneAbsPxlPos: ', dart_plane_abs_pxl_pos.to_list())
         # Other way round minus if camera on other side
         dart_plane_rel_pxl_pos = self.bulls_eye_pxl_coord.minus(dart_plane_abs_pxl_pos)
