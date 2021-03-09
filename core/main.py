@@ -45,7 +45,7 @@ def on_incoming_images(x_image, y_image):
         for camera, image in zip(cameras, images):
             camera.update_last_taken_image(image)
         print('Updated last taken image')
-    elif any(change_occurred_in_images):
+    elif all(change_occurred_in_images):
         fig, axes = plt.subplots(2, 2)
         axes[0][0].imshow(x_camera.last_taken_image)
         axes[0][1].imshow(x_image)
