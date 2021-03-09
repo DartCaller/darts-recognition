@@ -1,37 +1,33 @@
-import socketio
-from picamera import PiCamera
-import datetime
-from time import sleep
+# https://picamera.readthedocs.io/en/release-1.12/recipes1.html#capturing-to-a-network-stream
+# served as a basis for this file
 import io
 import os
+import socket
+import struct
+from time import sleep
 import subprocess
+import picamera
 
 
-debug = False
-camera = PiCamera()
-camera.resolution = (1640, 1232)  # (3280, 2464)
-camera.framerate = 15
-camera.rotation = 180
-camera.start_preview(alpha=192)
+client_socket = socket.socket()
+client_socket.connect(('192.168.0.127', 8000))
 ssh = 'raspberrypi.local'
 remote_dir = '/home/pi/Desktop'
-connected = False
+# Make a file-like object out of the connection
+connection = client_socket.makefile('wb')
 
 
-sio = socketio.Client(logger=debug, engineio_logger=debug)
-
-
-def get_remote_camera_daemon_id():
-    pid = execute_command(via_ssh('pgrep raspistill', ssh)).read().rstrip()
-    if (pid != ""):
-        print(f'Found already running camera daemon with pid {pid}')
-        return pid
+def get_remote_camera_daemon_process():
+    process_id = execute_command(via_ssh('pgrep raspistill', ssh)).read().rstrip()
+    if process_id != "":
+        print(f'Found already running camera daemon with pid {process_id}')
+        return process_id, None
     else:
-        process = execute_command(via_ssh('cd /home/pi/Desktop/ && ./camera.sh', ssh))
+        daemon_process = execute_command(via_ssh('cd /home/pi/Desktop/ && ./camera.sh', ssh))
         sleep(3)
-        pid = execute_command(via_ssh('pgrep raspistill', ssh)).read().rstrip()
+        process_id = execute_command(via_ssh('pgrep raspistill', ssh)).read().rstrip()
         print(f'Started Camera Daemon with pid {pid}')
-        return pid
+        return process_id, daemon_process
 
 
 def via_ssh(command, ssh_ip):
@@ -42,53 +38,43 @@ def execute_command(cmd):
     return os.popen(cmd)
 
 
-@sio.event
-def connect():
-    print(f'connected at {datetime.datetime.now()}')
-    global connected
-    connected = True
+def capture_on_remote():
+    execute_command(via_ssh(f'kill -USR1 {pid}', ssh))
+    sleep(1)
+    subprocess.call(f'ssh {ssh} "cat {remote_dir}/dart.jpg" > dart.jpg', shell=True)
+    f = open('dart.jpg', 'rb')
+    remote_image_data = f.read()
+    f.close()
+    return remote_image_data
 
 
-@sio.event
-def connect_error():
-    print("The connection failed!")
+try:
+    pid, process = get_remote_camera_daemon_process()
+    with picamera.PiCamera() as camera:
+        camera.resolution = (1640, 1232)
+        camera.rotation = 180
+        camera.start_preview()
+        sleep(2)
 
-
-@sio.event
-def disconnect():
-    print("I'm disconnected!")
-    global connected
-    connected = False
-
-
-def main():
-    pid = get_remote_camera_daemon_id()
-    image_stream = io.BytesIO()
-    try:
-        while True:
-            if connected:
-                # Take image locally
-                camera.capture(image_stream, 'jpeg')
-                local_image_data = image_stream.getvalue()
-                # Take image remotely
-                execute_command(via_ssh(f'kill -USR1 {pid}', ssh))
-                sleep(1)
-                subprocess.call(f'ssh {ssh} "cat {remote_dir}/dart.jpg" > dart.jpg', shell=True)
-                f = open('dart.jpg', 'rb')
-                remote_image_data = f.read()
-                f.close()
-                # Emit Event
-                data = local_image_data + remote_image_data
-                cur_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')
-                split_pos = len(local_image_data)
-                sio.emit('image', {'split_pos': split_pos, 'time': cur_time, 'stream': data})
-            sleep(5)
-    finally:
-        print('CleanUp')
-        image_stream.close()
-        camera.stop_preview()
-        print('CleanUp Finished')
-
-
-sio.connect('ws://192.168.0.127:8000')
-main()
+        stream = io.BytesIO()
+        for foo in camera.capture_continuous(stream, 'jpeg'):
+            image_from_remote = capture_on_remote()
+            # Write the length of both captures to the stream and flush to sent
+            connection.write(struct.pack('<L', stream.tell()))
+            connection.write(struct.pack('<L', len(image_from_remote)))
+            connection.flush()
+            # Rewind the local stream and send both images
+            stream.seek(0)
+            connection.write(stream.read())
+            connection.write(image_from_remote)
+            # Reset the local stream for the next local capture
+            stream.seek(0)
+            stream.truncate()
+    # Write a length of zero to the stream to signal we're done
+    connection.write(struct.pack('<L', 0))
+    connection.write(struct.pack('<L', 0))
+finally:
+    connection.close()
+    client_socket.close()
+    if process:
+        process.close()
