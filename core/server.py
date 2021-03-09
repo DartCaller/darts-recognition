@@ -4,12 +4,21 @@ import socket
 from helper_functions import save_image
 from datetime import datetime
 import main
+import cv2
+import numpy as np
+from PIL import Image
+import io
 
 
 local_ip = socket.gethostbyname(socket.gethostname())
 debug = False
 sio = socketio.Server(logger=debug, engineio_logger=debug)
 app = socketio.WSGIApp(sio)
+
+
+def convert_jpeg_bytes_into_numpy_rgb(jpeg_bytes):
+    return cv2.imdecode(np.frombuffer(jpeg_bytes, np.uint8), -1).copy()
+    # return np.array(Image.open(io.BytesIO(jpeg_bytes)))
 
 
 def print_time_of_flight(send_timestamp):
@@ -30,7 +39,10 @@ def image(sid, data):
     y_image = data['stream'][data['split_pos']:]
     save_image('x', x_image)
     save_image('y', y_image)
-    main.on_incoming_images(x_image, y_image)
+    main.on_incoming_images(
+        convert_jpeg_bytes_into_numpy_rgb(x_image),
+        convert_jpeg_bytes_into_numpy_rgb(y_image)
+    )
 
 
 @sio.on('disconnect')

@@ -15,6 +15,7 @@ camera.rotation = 180
 camera.start_preview(alpha=192)
 ssh = 'raspberrypi.local'
 remote_dir = '/home/pi/Desktop'
+connected = False
 
 
 sio = socketio.Client(logger=debug, engineio_logger=debug)
@@ -44,7 +45,8 @@ def execute_command(cmd):
 @sio.event
 def connect():
     print(f'connected at {datetime.datetime.now()}')
-    main()
+    global connected
+    connected = True
 
 
 @sio.event
@@ -55,9 +57,8 @@ def connect_error():
 @sio.event
 def disconnect():
     print("I'm disconnected!")
-
-
-sio.connect('ws://192.168.0.127:8000')
+    global connected
+    connected = False
 
 
 def main():
@@ -65,22 +66,29 @@ def main():
     image_stream = io.BytesIO()
     try:
         while True:
-            # Take image locally
-            camera.capture(image_stream, 'jpeg')
-            local_image_data = image_stream.getvalue()
-            # Take image remotely
-            execute_command(via_ssh(f'kill -USR1 {pid}', ssh))
-            sleep(1)
-            subprocess.call(f'ssh {ssh} "cat {remote_dir}/dart.jpg" > dart.jpg', shell=True)
-            f = open('dart.jpg', 'rb')
-            remote_image_data = f.read()
-            f.close()
-            # Emit Event
-            data = local_image_data + remote_image_data
-            cur_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')
-            split_pos = len(local_image_data)
-            sio.emit('image', {'split_pos': split_pos, 'time': cur_time, 'stream': data})
+            if connected:
+                # Take image locally
+                camera.capture(image_stream, 'jpeg')
+                local_image_data = image_stream.getvalue()
+                # Take image remotely
+                execute_command(via_ssh(f'kill -USR1 {pid}', ssh))
+                sleep(1)
+                subprocess.call(f'ssh {ssh} "cat {remote_dir}/dart.jpg" > dart.jpg', shell=True)
+                f = open('dart.jpg', 'rb')
+                remote_image_data = f.read()
+                f.close()
+                # Emit Event
+                data = local_image_data + remote_image_data
+                cur_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')
+                split_pos = len(local_image_data)
+                sio.emit('image', {'split_pos': split_pos, 'time': cur_time, 'stream': data})
             sleep(5)
     finally:
+        print('CleanUp')
         image_stream.close()
         camera.stop_preview()
+        print('CleanUp Finished')
+
+
+sio.connect('ws://192.168.0.127:8000')
+main()
