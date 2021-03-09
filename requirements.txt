@@ -3,3 +3,6 @@ numpy~=1.19.5
 scipy~=1.5.4
 setuptools~=40.6.2
 Cython~=0.29.21
+eventlet~=0.30.1
+Pillow~=8.1.0
+python-socketio~=5.0.4

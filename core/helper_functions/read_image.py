@@ -1,6 +1,5 @@
-import matplotlib.image as mpimg
-import numpy as np
+import cv2
 
 
 def read_image(image_path):
-    return np.flip(mpimg.imread(image_path).copy(), (0, 1))
+    return cv2.imread(image_path)
