@@ -30,22 +30,13 @@ class Camera:
         if self.last_taken_image is None:
             return False
 
-        # print(image.shape, self.last_taken_image.shape)
         number_of_changed_pixels = get_image_diff(self.last_taken_image, image)
-        print('image_change:', number_of_changed_pixels)
-        # print(f'{number_of_changed_pixels} changed Pixels')
         return number_of_changed_pixels >= config['image_diff_threshold']
 
     def is_image_empty_board(self, image):
-        # print(self.empty_board_image, type(self.empty_board_image))
-        # if None not in (image, self.empty_board_image):
         if [x for x in (image, self.empty_board_image) if x is None]:
             return False
 
-        # print(image.shape, self.empty_board_image.shape)
         number_of_changed_pixels = get_image_diff(self.empty_board_image, image)
 
-        print('empty_board:', number_of_changed_pixels)
-        # print(f'{number_of_changed_pixels} changed Pixels')
         return number_of_changed_pixels <= config['image_diff_threshold']
-        # return 3 <= config['image_diff_threshold']
