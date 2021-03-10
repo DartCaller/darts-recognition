@@ -51,7 +51,7 @@ def capture_on_remote():
 try:
     pid, process = get_remote_camera_daemon_process()
     with picamera.PiCamera() as camera:
-        camera.resolution = (1640, 1232)
+        camera.resolution = (3280, 2464)
         camera.rotation = 180
         camera.start_preview()
         sleep(2)
