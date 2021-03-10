@@ -24,9 +24,9 @@ def get_remote_camera_daemon_process():
         return process_id, None
     else:
         daemon_process = execute_command(via_ssh('cd /home/pi/Desktop/ && ./camera.sh', ssh))
-        sleep(3)
+        sleep(2)
         process_id = execute_command(via_ssh('pgrep raspistill', ssh)).read().rstrip()
-        print(f'Started Camera Daemon with pid {pid}')
+        print(f'Started Camera Daemon with pid {process_id}')
         return process_id, daemon_process
 
 
