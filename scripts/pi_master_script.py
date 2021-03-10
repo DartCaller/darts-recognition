@@ -70,6 +70,7 @@ try:
             # Reset the local stream for the next local capture
             stream.seek(0)
             stream.truncate()
+            sleep(1)
     # Write a length of zero to the stream to signal we're done
     connection.write(struct.pack('<L', 0))
     connection.write(struct.pack('<L', 0))
