@@ -38,8 +38,7 @@ def execute_command(cmd):
     return os.popen(cmd)
 
 
-def capture_on_remote():
-    execute_command(via_ssh(f'kill -USR1 {pid}', ssh))
+def receive_from_remote():
     sleep(1)
     subprocess.call(f'ssh {ssh} "cat {remote_dir}/dart.jpg" > dart.jpg', shell=True)
     f = open('dart.jpg', 'rb')
@@ -58,7 +57,13 @@ try:
 
         stream = io.BytesIO()
         for foo in camera.capture_continuous(stream, 'jpeg'):
-            image_from_remote = capture_on_remote()
+            # Take both images
+            execute_command(via_ssh(f'kill -USR1 {pid}', ssh))
+            image_length = stream.tell()
+            stream.seek(0)
+            image = stream.read()
+
+            image_from_remote = receive_from_remote()
             # Write the length of both captures to the stream and flush to sent
             connection.write(struct.pack('<L', stream.tell()))
             connection.write(struct.pack('<L', len(image_from_remote)))
