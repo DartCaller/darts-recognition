@@ -22,13 +22,13 @@ def calculate_dartboard_section_from_coords(vector, debug=False):
     section = sections[math.floor(degree / 18)]
 
     if ring_index == 0:
-        return 'Bulls Eye'
+        return 'D25'
     elif ring_index == 1:
-        return 'Single Bull'
+        return 'S25'
     elif ring_index == 3:
-        return 'Triple ' + str(section)
+        return 'T' + str(section)
     elif ring_index == 5:
-        return 'Double ' + str(section)
+        return 'D' + str(section)
     elif ring_index is None:
         return '0'
-    return 'Single ' + str(section)
+    return 'S' + str(section)
