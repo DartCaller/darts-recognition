@@ -78,8 +78,8 @@ while True:
                 save_image(axis, im_bytes)
 
             images = list(map(lambda image_bytes: convert_jpeg_bytes_into_numpy_rgb(image_bytes), image_bytes_list))
-            main.on_incoming_images(images[0], images[1])
+            Thread(target=main.on_incoming_images, args=(images[0], images[1])).start()
     except IndexError:
-        sleep(1)
+        sleep(0.5)
     except OSError:
         pass
