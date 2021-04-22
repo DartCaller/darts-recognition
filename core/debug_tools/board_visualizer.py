@@ -28,7 +28,7 @@ def _draw_rings(ax, center, scale):
     for ringSize in ring_sizes:
         ring = plt.Circle(center, ringSize * scale, color='white', fill=False, linewidth=1)
         ax.add_patch(ring)
-    ax.add_patch(plt.Circle(center, 12, linewidth=1, color='black', zorder=3))
+    ax.add_patch(plt.Circle(center, 15, linewidth=1, color='black', zorder=3))
     ax.add_patch(plt.Circle(center, 6, linewidth=1, color='white', fill=False, zorder=4))
     ax.add_patch(plt.Circle(center, 4, linewidth=1, color='black', zorder=5))
 
@@ -43,7 +43,7 @@ def _draw_dart(ax, point):
     angle = math.radians(-9)
     qx = math.cos(angle) * point.x - math.sin(angle) * point.y
     qy = math.sin(angle) * point.x + math.cos(angle) * point.y
-    ax.plot(qx, qy, 'ro')
+    ax.plot(qx, qy, 'ro', zorder=6)
 
 
 def draw_point_on_dartboard(point):
