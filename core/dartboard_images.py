@@ -65,10 +65,7 @@ class DartboardImage:
     def __get_image_diff(base_image, image):
         print('Calculating Image Diff')
         binary_diff_image = binary_diff_images(
-            base_image,
-            image,
-            (0, base_image.shape[0]),
-            config['pixel_diff_threshold']
+            base_image, image, None, config['pixel_diff_threshold']
         )
         enhanced_diff_img = binary_opening(binary_diff_image, structure=np.ones((5, 5))).astype(int)
         enhanced_diff_img_copy = enhanced_diff_img.copy()
