@@ -2,11 +2,13 @@ from . import find_first_index
 import math
 
 
-def calculate_dartboard_section_from_coords(vector):
+def calculate_dartboard_section_from_coords(vector, debug=False):
     degree = math.degrees(math.atan2(vector.y, vector.x))
-    print('degree ', degree)
     bull_dist = (((vector.x ** 2) + (vector.y ** 2)) ** 0.5)
-    print('bullDist ', bull_dist)
+
+    if debug:
+        print('degree ', degree)
+        print('bullDist ', bull_dist)
 
     if degree < 0:
         degree += 360
