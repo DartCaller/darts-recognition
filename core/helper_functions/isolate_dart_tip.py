@@ -3,7 +3,7 @@ from scipy.ndimage import find_objects
 import numpy as np
 
 
-def isolate_dart_tip(img, second_dart):
+def isolate_dart_tip(img, second_dart=False):
     labeled_array, _ = label(img)
     obj_locations = find_objects(labeled_array)
     obj_indexes_sorted_by_obj_size = sorted(
