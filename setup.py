@@ -4,7 +4,6 @@ import numpy as np
 
 setup(
     name='Darts Recognition',
-    package_dir={'': 'core'},
     ext_modules=cythonize(
         "core/helper_functions/binary_diff_images.pyx",
         language_level="3",
