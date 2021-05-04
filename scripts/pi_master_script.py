@@ -62,12 +62,12 @@ try:
             image = stream.read()
             image_from_remote = take_remote_image(pid)
             # Write the length of both captures to the stream and flush to sent
-            connection.write(struct.pack('<L', len(image_from_remote)))
             connection.write(struct.pack('<L', image_length))
+            connection.write(struct.pack('<L', len(image_from_remote)))
             connection.flush()
             # Send both images
-            connection.write(image_from_remote)
             connection.write(image)
+            connection.write(image_from_remote)
             # Reset the local stream for the next local capture
             stream.seek(0)
             stream.truncate()
