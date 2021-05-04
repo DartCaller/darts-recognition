@@ -67,18 +67,18 @@ Thread(target=read_images_from_ws, args=(received_image_queue,)).start()
 
 while True:
     try:
-        image_bytes_list = received_image_queue.popleft()
+        img_bytes_list = received_image_queue.popleft()
         if len(sys.argv) > 1 and sys.argv[1] == '--label-mode':
-            label_image(image_bytes_list)
+            label_image(img_bytes_list)
             input('Enter to continue:')
             sleep(3)
             received_image_queue.clear()
         else:
-            for im_bytes, axis in zip(image_bytes_list, ['x', 'y']):
-                save_image(axis, im_bytes)
+            for img_bytes, axis in zip(img_bytes_list, ['x', 'y']):
+                save_image(axis, img_bytes)
 
-            images = list(map(lambda image_bytes: convert_jpeg_bytes_into_numpy_rgb(image_bytes), image_bytes_list))
-            Thread(target=main.on_incoming_images, args=(images[0], images[1])).start()
+            imgs = list(map(lambda image_bytes: convert_jpeg_bytes_into_numpy_rgb(image_bytes), img_bytes_list))
+            Thread(target=main.on_incoming_imgs, args=(imgs[0], imgs[1])).start()
     except IndexError:
         sleep(0.5)
     except OSError:

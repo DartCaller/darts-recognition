@@ -15,10 +15,10 @@ class DartBoard:
         self.y_camera = y_camera  # Vector(-422, 0)
 
     def calibrate(self, empty_board, calib_board, calib_dart_distance):
-        x_images = DartboardImage('x', calib_board[0], empty_board[0])
-        y_images = DartboardImage('y', calib_board[1], empty_board[1])
-        range_min = self.get_dart_pxl_pos(x_images, y_images)
-        range_max = self.get_dart_pxl_pos(x_images, y_images, get_second_dart=True)
+        x_imgs = DartboardImage('x', calib_board[0], empty_board[0])
+        y_imgs = DartboardImage('y', calib_board[1], empty_board[1])
+        range_min = self.get_dart_pxl_pos(x_imgs, y_imgs)
+        range_max = self.get_dart_pxl_pos(x_imgs, y_imgs, get_second_dart=True)
 
         self.bulls_eye_pxl_coord = Vector((range_min.x + range_max.x) / 2, (range_min.y + range_max.y) / 2)
         if config['debug']['showCalculation']:
@@ -38,23 +38,23 @@ class DartBoard:
 
     @staticmethod
     def get_single_axis_dart_pxl_pos(dart_img, second_dart=False):
-        diff_img = dart_img.get_diff_to_last_image()
+        diff_img = dart_img.get_diff_to_last_img()
 
         isolated_dart_tip = isolate_dart_tip(diff_img, second_dart)
         _, x_coordinate = center_of_mass(isolated_dart_tip)
 
         if config['debug']['generalInfo']:
             show_dart_reco_debug_info(
-                dart_img.get_last_image(),
-                dart_img.get_image(),
-                dart_img.get_diff_to_last_image(),
+                dart_img.get_last_img(),
+                dart_img.get_img(),
+                dart_img.get_diff_to_last_img(),
                 x_coordinate
             )
         return x_coordinate
 
-    def get_dart_pxl_pos(self, x_axis_images, y_axis_images, get_second_dart=False):
-        x_pxl_pos = self.get_single_axis_dart_pxl_pos(x_axis_images, get_second_dart)
-        y_pxl_pos = self.get_single_axis_dart_pxl_pos(y_axis_images, get_second_dart)
+    def get_dart_pxl_pos(self, x_axis_imgs, y_axis_imgs, get_second_dart=False):
+        x_pxl_pos = self.get_single_axis_dart_pxl_pos(x_axis_imgs, get_second_dart)
+        y_pxl_pos = self.get_single_axis_dart_pxl_pos(y_axis_imgs, get_second_dart)
         return Vector(x_pxl_pos, y_pxl_pos)
 
     def find_inter_section(self, dart_plane_rel_pos):
