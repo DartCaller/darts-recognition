@@ -1,6 +1,6 @@
 import numpy as np
 from config import config
-from scipy.ndimage import find_objects, binary_opening
+from scipy.ndimage import find_objects, binary_opening, binary_closing
 from scipy.ndimage.measurements import label
 from helper_functions.binary_diff_images import binary_diff_images
 
@@ -80,22 +80,6 @@ class DartboardImage:
         for obj_h in obj_indexes_to_be_removed:
             enhanced_diff_img = np.where(enhanced_diff_img == obj_h + 1, 0, enhanced_diff_img)
         enhanced_diff_img = np.where(enhanced_diff_img != 0, 1, 0)
-        # fig, axes = plt.subplots(2, 1)
-        # axes[0].imshow(enhanced_diff_img_copy)
-        # axes[1].imshow(enhanced_diff_img)
-        # fig.show()
-        # unique, counts = np.unique(enhanced_diff_img, return_counts=True)
-        # print(dict(zip(unique, counts)))
-
-        # if len(obj_indexes_to_be_removed) > 0:
-        #     print('Comp')
-        #     unique, counts = np.unique(enhanced_diff_img[obj_locations[obj_indexes_to_be_removed[0]]],
-        #                                return_counts=True)
-        #     print(dict(zip(unique, counts)))
-        #     unique, counts = np.unique(enhanced_diff_img_copy[obj_locations[obj_indexes_to_be_removed[0]]],
-        #                                return_counts=True)
-        #     print(dict(zip(unique, counts)))
-        #     print('>Comp')
         return enhanced_diff_img
 
 

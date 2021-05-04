@@ -1,9 +1,8 @@
 from vector import Vector
 from dart_board import DartBoard
 from camera import Camera
-from dartboard_images import DartboardImage, DartboardImages
+from dartboard_images import DartboardImages
 from helper_functions import read_image
-from datetime import datetime
 import matplotlib.pyplot as plt
 from config import config
 import requests
@@ -72,19 +71,9 @@ def on_incoming_imgs(x_img, y_img):
         x_img, y_img, x_cam.get_last_img(), y_cam.get_last_img(), x_cam.empty_board_img, y_cam.empty_board_img
     )
 
-    display_debug_images(img_objs, [
-        # ('Emtpy', 'get_empty_img'),
-        ('Last', 'get_last_img'),
-        ('New', 'get_img'),
-        ('Empty Diff', 'get_diff_to_empty_img'),
-        ('Last Diff', 'get_diff_to_last_img'),
-    ], None)
-
     are_imgs_empty = img_objs.are_last_imgs_empty()
     last_imgs_were_empty = list(map(lambda cam: cam.last_taken_img.is_empty_board(), cameras))
     change_occurred_in_imgs = img_objs.do_last_imgs_contain_change()
-    print('Last Diff ', list(map(lambda item: item.get_diff_count_to_last_img(), img_objs.list())))
-    print('Empty Diff ', list(map(lambda item: item.get_diff_count_to_empty_img(), img_objs.list())))
 
     if all(are_imgs_empty) or (any(are_imgs_empty) and waited_for_empty == max_waited):
         waited_for_empty = 0
