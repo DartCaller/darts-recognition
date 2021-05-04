@@ -102,7 +102,7 @@ def on_incoming_imgs(x_img, y_img):
         print(f'Hit: {result}!')
         for camera, img in zip(cameras, img_objs.list()):
             camera.update_last_taken_img(img)
-        # requests.post(config['backend_url'] + '/board/' + config['board_id'] + '/throw', result)
+        requests.post(config['backend_url'] + '/board/' + config['board_id'] + '/throw', result)
     elif any(change_occurred_in_imgs):
         waited_for_change += 1
         print('Waiting for second change in image')
