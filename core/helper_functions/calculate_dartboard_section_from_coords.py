@@ -30,5 +30,5 @@ def calculate_dartboard_section_from_coords(vector, debug=False):
     elif ring_index == 5:
         return 'D' + str(section)
     elif ring_index is None:
-        return '0'
+        return 'S0'
     return 'S' + str(section)
