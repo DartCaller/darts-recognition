@@ -17,7 +17,7 @@ main.setup()
 server_socket = socket.socket()
 server_socket.bind(('0.0.0.0', 8000))
 server_socket.listen(10)
-received_image_queue = deque()
+received_image_queue = deque(maxlen=1)
 print('Listening for Ws Connection')
 
 # Accept a single connection and make a file-like object out of it
@@ -67,7 +67,7 @@ Thread(target=read_images_from_ws, args=(received_image_queue,)).start()
 
 while True:
     try:
-        img_bytes_list = received_image_queue.popleft()
+        img_bytes_list = received_image_queue.pop()
         if len(sys.argv) > 1 and sys.argv[1] == '--label-mode':
             label_image(img_bytes_list)
             input('Enter to continue:')
@@ -78,7 +78,7 @@ while True:
                 save_image(axis, img_bytes)
 
             imgs = list(map(lambda image_bytes: convert_jpeg_bytes_into_numpy_rgb(image_bytes), img_bytes_list))
-            Thread(target=main.on_incoming_imgs, args=(imgs[0], imgs[1])).start()
+            main.on_incoming_imgs(imgs[0], imgs[1])
     except IndexError:
         sleep(0.5)
     except OSError:
