@@ -87,10 +87,10 @@ def on_incoming_imgs(x_img, y_img):
         print('Only one axis emptied')
     elif all(change_occurred_in_imgs) or (any(change_occurred_in_imgs) and waited_for_change == max_waited):
         waited_for_change = 0
-        result = dartboard.get_dart_score(img_objs.x, img_objs.y)
-        print(f'Hit: {result}!')
         for camera, img in zip(cameras, img_objs.list()):
             camera.update_last_taken_img(img)
+        result = dartboard.get_dart_score(img_objs.x, img_objs.y)
+        print(f'Hit: {result}!')
         requests.post(config['backend_url'] + '/board/' + config['board_id'] + '/throw', result)
     elif any(change_occurred_in_imgs):
         waited_for_change += 1
