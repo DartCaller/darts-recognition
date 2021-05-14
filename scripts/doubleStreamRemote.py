@@ -5,15 +5,12 @@ import socket
 import struct
 from time import sleep
 import picamera
-from datetime import datetime
 
 
 server_socket = socket.socket()
 server_socket.bind(('0.0.0.0', 8000))
 server_socket.listen(10)
-print('Listening for Ws Connection', datetime.now().strftime("%Y-%m-%dT%H-%M-%S"))
 connection = server_socket.accept()[0].makefile('wrb')
-print('Connected')
 
 try:
     with picamera.PiCamera() as camera:

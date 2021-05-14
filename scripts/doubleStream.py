@@ -5,8 +5,6 @@ from time import sleep
 import picamera
 from typing_extensions import Literal
 import subprocess
-import os
-from datetime import datetime
 
 PI_ADDR = 'raspberrypi.local'
 
@@ -58,9 +56,7 @@ def try_fnc(fnc):
 try:
     remote_socket_process = start_remote_socket()
     pi_socket, pi_connection = create_socket_connection('raspberrypi.local', 'wrb')
-    print('Connected to pi')
     backend_socket, backend_connection = create_socket_connection('192.168.0.127', 'wb')
-    print('Connected to backend')
 
     with picamera.PiCamera() as camera:
         camera.resolution = (1640, 1232)
