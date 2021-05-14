@@ -11,7 +11,10 @@ from pathlib import Path
 from threading import Thread
 from collections import deque
 from time import sleep
+import subprocess
 
+
+PI_ADDR = 'raspi3'
 
 main.setup()
 server_socket = socket.socket()
@@ -19,6 +22,10 @@ server_socket.bind(('0.0.0.0', 8000))
 server_socket.listen(10)
 received_image_queue = deque(maxlen=1)
 print('Listening for Ws Connection')
+
+pi_process = subprocess.Popen(
+    f'ssh {PI_ADDR} "source ~/.bash_profile && cd Desktop && python doubleStream.py"', shell=True
+)
 
 # Accept a single connection and make a file-like object out of it
 connection = server_socket.accept()[0].makefile('rb')
@@ -51,16 +58,15 @@ def read_images_from_ws(image_queue):
                 break
             # Construct streams to hold the image data and read the images
             # data from the connection
-            images_bytes = list(map(
-                lambda image_length: connection.read(image_length),
-                image_lengths
-            ))
+            images_bytes = list(map(lambda image_length: connection.read(image_length), image_lengths))
 
             image_queue.append(images_bytes)
 
     finally:
         connection.close()
         server_socket.close()
+        pi_process.kill()
+        pi_process.communicate()
 
 
 Thread(target=read_images_from_ws, args=(received_image_queue,)).start()
