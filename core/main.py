@@ -8,17 +8,17 @@ from config import config
 import requests
 
 
-max_waited = 2
+max_waited = 5
 waited_for_empty = 0
 waited_for_change = 0
-x_cam = Camera('x', Vector(0, 396), 1220)
-y_cam = Camera('y', Vector(-390, 0), 1100)
+x_cam = Camera('x', Vector(0, 396), 610)
+y_cam = Camera('y', Vector(-390, 0), 550)
 
 
-empty_x = x_cam.crop_img(read_image('labeled_images/newEmpty/x_0.JPG'))
-empty_y = y_cam.crop_img(read_image('labeled_images/newEmpty/y_0.JPG'))
-calib_x = x_cam.crop_img(read_image('labeled_images/newCalib/x_0.JPG'))
-calib_y = y_cam.crop_img(read_image('labeled_images/newCalib/y_0.JPG'))
+empty_x = x_cam.crop_img(read_image('labeled_images/lowResEmpty/x_0.JPG'))
+empty_y = y_cam.crop_img(read_image('labeled_images/lowResEmpty/y_0.JPG'))
+calib_x = x_cam.crop_img(read_image('labeled_images/lowResCalib/x_0.JPG'))
+calib_y = y_cam.crop_img(read_image('labeled_images/lowResCalib/y_0.JPG'))
 
 dartboard = DartBoard(x_cam.pos, y_cam.pos)
 
@@ -47,8 +47,8 @@ def display_debug_images(img_obj, properties_to_display, axis=None):
 def setup():
     print('# Calibrating Dartboard')
     dartboard.calibrate((empty_x, empty_y), (calib_x, calib_y), 340)
-    x_cam.set_y_bounds_min(1220)
-    y_cam.set_y_bounds_min(1100)
+    x_cam.set_y_bounds_min(610)
+    y_cam.set_y_bounds_min(550)
 
 
 def reset_cam_imgs(cameras, img_objs):
