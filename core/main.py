@@ -5,7 +5,7 @@ from dartboard_images import DartboardImages
 from helper_functions import read_image
 import matplotlib.pyplot as plt
 from config import config
-import requests
+from auth_request import auth_request
 
 
 max_waited = 5
@@ -79,7 +79,7 @@ def on_incoming_imgs(x_img, y_img):
         waited_for_empty = 0
         if not any(last_imgs_were_empty):
             print('Board was emptied')
-            # requests.post(config['backend_url'] + '/game/boardEmptied')
+            # auth_request(config['backend_url'] + '/game/boardEmptied')
         reset_cam_imgs(cameras, img_objs)
         print('Updated last taken image')
     elif any(are_imgs_empty) and not any(last_imgs_were_empty):
@@ -91,7 +91,7 @@ def on_incoming_imgs(x_img, y_img):
             camera.update_last_taken_img(img)
         result = dartboard.get_dart_score(img_objs.x, img_objs.y)
         print(f'Hit: {result}!')
-        requests.post(config['backend_url'] + '/board/' + config['board_id'] + '/throw', result)
+        auth_request(config['backend_url'] + '/board/' + config['board_id'] + '/throw', result)
     elif any(change_occurred_in_imgs):
         waited_for_change += 1
         print('Waiting for second change in image')

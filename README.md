@@ -60,6 +60,19 @@ And that's it. Now you should be ready to fire up the server and receive and pro
 <a name="running"/>
 
 ### :running: Run
+You'll several environment variables to run this project.
+Since this server is going to post his result to the [Backend](https://github.com/DartCaller/api) using the [Client Credentials Grant Flow](https://datatracker.ietf.org/doc/html/rfc6749#section-4.4) we need
+to set a few variables for that
+
+|ENV VAR                    |Description   |
+|----                       |----          |
+|CLIENT_ID                  |client id of your authorisation server|
+|CLIENT_SECRET              |client secret of your authorisation server|
+|TOKEN_URL                  |the url of your authorisation server where the access token can be requested from|
+|TOKEN_URL                  |some authorisation servers such as Auth0 also require an `audience` to be set when requesting the token|
+|OATUHLIB_INSECURE_TRANSPORT|you might need to set this to `true `when the backend, to which you want to send the score, doesn't not support https for example in the case of `localhost`|
+
+With these env vars you can then run
 
 ```bash
 # start both image taking scripts on the raspberry pi's and start the server to receive their images and process the results
