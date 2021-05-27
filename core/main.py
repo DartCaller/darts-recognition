@@ -3,7 +3,6 @@ from dart_board import DartBoard
 from camera import Camera
 from dartboard_images import DartboardImages
 from helper_functions import read_image
-import matplotlib.pyplot as plt
 from config import config
 from auth_request import auth_request
 
@@ -21,27 +20,6 @@ calib_x = x_cam.crop_img(read_image('labeled_images/lowResCalib/x_0.JPG'))
 calib_y = y_cam.crop_img(read_image('labeled_images/lowResCalib/y_0.JPG'))
 
 dartboard = DartBoard(x_cam.pos, y_cam.pos)
-
-
-def display_image_pair_on_axis(axis, title, imgs, methods, only_axis=None):
-    def should_display_axis(ax): return only_axis is None or only_axis == ax
-    for i, axis_label in enumerate(['x', 'y']):
-        if should_display_axis(i):
-            axis[i].set_title(f'{title} {axis_label.capitalize()}')
-            axis[i].imshow(getattr(getattr(imgs, axis_label), methods)())
-
-
-def display_debug_images(img_obj, properties_to_display, axis=None):
-    axis_to_display = 2 if axis is None else 1
-    fig, axes = plt.subplots(len(properties_to_display), axis_to_display)
-
-    if len(properties_to_display) == 1:
-        axes = [axes]
-    if axis is not None:
-        axes = [axes]
-    for num, (title, method) in enumerate(properties_to_display):
-        display_image_pair_on_axis(axes[num], title, img_obj, method, axis)
-    fig.show()
 
 
 def setup():
