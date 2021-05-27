@@ -15,8 +15,8 @@ def read_and_crop_image_pair(image_path, number='0'):
     def get_axis_image(axis):
         return read_image(f'{image_path}/{axis}_{number}.JPG')
 
-    return x_camera.crop_image(get_axis_image('x')), \
-        y_camera.crop_image(get_axis_image('y'))
+    return x_camera.crop_img(get_axis_image('x')), \
+        y_camera.crop_img(get_axis_image('y'))
 
 
 empty_imgs = read_and_crop_image_pair('../labeled_images/empty')
@@ -50,8 +50,8 @@ def get_all_labeled_image_pairs():
         if value['x'] is not None and value['y'] is not None:
             result.append((
                 key.split('_')[0],
-                x_camera.crop_image(value['x']),
-                y_camera.crop_image(value['y']),
+                x_camera.crop_img(value['x']),
+                y_camera.crop_img(value['y']),
                 value['path']
             ))
     print('finished loading images')
