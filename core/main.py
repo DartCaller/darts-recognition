@@ -7,7 +7,7 @@ from config import config
 from auth_request import auth_request
 
 
-max_waited = 5
+max_waited = 2
 waited_for_empty = 0
 waited_for_change = 0
 x_cam = Camera('x', Vector(0, 396), 610)
