@@ -118,6 +118,8 @@ After I have the biggest patch, I'll take the bottom-most 20 pixels of that patc
 
 I use one camera per axis. Using triangulation and the known position of each camera, I'm then able to calculate the intersection of the two constructed lines. This gives me the dart position on the board.
 
+In order to calculate the field that was hit, based on the coordinates on the dartboard, I followed the approach shown in this repository https://github.com/vassdoki/opencv-darts/blob/master/src/darts/DartsUtil.scala. In this approach, he takes the coordinates in order to calculate the distance from the center and the rotation around the board. With the distance from the center he can then easily calculate if the dart hit the Single, Double, Triple or was outside of the dartboard. And with the angle around the board, you can calculate which number between 1 and 20 you have hit. These two combined then result in Double 3 for example.
+
 ### Last Steps
 
 And that's already it. A bit more logic on how to handle the constant stream of images because sometimes a dart appears first on one axis and needs one more frame to appear on the second image. Or to handle the case when you have the hands in the image to take the darts out. Then a bit of memoization when calculating the diff of two images so that we have better performance when processing nearly one image per second.
